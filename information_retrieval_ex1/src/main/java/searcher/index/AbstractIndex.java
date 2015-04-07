@@ -1,5 +1,6 @@
-package indexer.index;
+package searcher.index;
 
 public class AbstractIndex {
 
+	
 }
