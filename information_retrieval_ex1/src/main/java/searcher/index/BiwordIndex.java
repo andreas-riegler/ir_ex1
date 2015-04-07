@@ -1,6 +1,9 @@
 package searcher.index;
 
 import java.util.ArrayList;
+import java.util.Map;
+
+import searcher.model.Document;
 
 public class BiwordIndex extends AbstractIndex{
 
@@ -9,9 +12,11 @@ public class BiwordIndex extends AbstractIndex{
 	}
 
 	@Override
-	public void addTerms(ArrayList<String> terms) {
+	public void addTerms(Document document, ArrayList<String> terms) {
 
 		String [] termsArray = (String []) terms.toArray();
+		
+		Map<String, Integer> documentIndex = document.getDocumentIndex();
 
 		for(int i = 0; i < terms.size() - 1; i++){
 
@@ -22,7 +27,15 @@ public class BiwordIndex extends AbstractIndex{
 			}
 			else{
 				index.put(biword, 1);
-			}		
-		}	
+			}
+			
+			if(documentIndex.containsKey(biword)){
+				documentIndex.put(biword, documentIndex.get(biword) + 1);
+			}
+			else{
+				documentIndex.put(biword, 1);
+			}
+			
+		}
 	}
 }

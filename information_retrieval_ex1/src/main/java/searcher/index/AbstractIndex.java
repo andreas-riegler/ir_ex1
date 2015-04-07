@@ -14,11 +14,11 @@ public abstract class AbstractIndex {
 		index = new HashMap<String, Integer>();
 	}
 	
-	public void addDocument(Document document){
-		addTerms(document.getTerms());
+	public void addDocument(Document document, ArrayList<String> terms){
+		addTerms(document, terms);
 		
 		//...
 	}
 	
-	public abstract void addTerms(ArrayList<String> terms);
+	public abstract void addTerms(Document document, ArrayList<String> terms);
 }

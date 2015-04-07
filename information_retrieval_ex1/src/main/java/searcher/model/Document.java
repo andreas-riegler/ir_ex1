@@ -1,5 +1,6 @@
 package searcher.model;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class Document {
@@ -7,6 +8,10 @@ public class Document {
 	private String documentId;	
 	private Map<String, Integer> documentIndex;
 	
+	
+	public Document(){
+		this.documentIndex = new HashMap<String, Integer>();
+	}
 	
 	public String getDocumentId() {
 		return documentId;
