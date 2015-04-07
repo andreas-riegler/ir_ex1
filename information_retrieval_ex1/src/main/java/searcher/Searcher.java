@@ -10,13 +10,14 @@ import searcher.parser.DocumentParser;
 public class Searcher {
 	
 	private int tflowerBound,tfupperBound;
-	private String stopWordList;
+	private String stopWordList,stemmer;
 	private AbstractIndex index;
 	private ExecutorService thPool;
-	public Searcher(AbstractIndex index, String stopWordListPath, int tflowerBound, int tfupperBound)
+	public Searcher(AbstractIndex index, String stopWordListPath, String stemmer,int tflowerBound, int tfupperBound)
 	{
 		this.index=index;
 		this.stopWordList=stopWordListPath;
+		this.stemmer=stemmer;
 		this.tflowerBound=tflowerBound;
 		this.tfupperBound=tfupperBound;
 		thPool=Executors.newFixedThreadPool(5);
@@ -30,7 +31,7 @@ public class Searcher {
         		for (File file : dir.listFiles()) {
         			if(dir.isFile())
         			{
-        				thPool.execute(new DocumentParser(tflowerBound,tfupperBound,index, stopWordList, file));
+        				thPool.execute(new DocumentParser(tflowerBound,tfupperBound,index, stemmer,stopWordList, file));
         			}
         		}
         	}
