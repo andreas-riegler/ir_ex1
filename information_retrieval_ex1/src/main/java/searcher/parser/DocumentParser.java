@@ -123,34 +123,4 @@ public class DocumentParser implements Runnable{
 	        }
 		return terms;
 	}
-	
-	public void weightDocTerms()
-	{
-		double docCount=index.getIndex().size();
-		for(Document doc:index.getDocuments())
-		{
-			for(Map.Entry<String,TermProperties> termEntry: doc.getDocumentIndex().entrySet())
-			{
-				int df=index.getIndex().get(termEntry.getKey());
-				double idf=Math.log10(docCount/df);
-				double tf=1+Math.log10(termEntry.getValue().getTermFrequency());
-				double weight=idf*tf;
-				termEntry.getValue().setWeighting(weight);
-			}
-		}
-	}
-	public void deriveDocumentVectorLengths()
-	{
-		for(Document doc:index.getDocuments())
-		{
-			double vectorLength=0;
-			for(Map.Entry<String,TermProperties> termEntry: doc.getDocumentIndex().entrySet())
-			{
-				vectorLength+=Math.pow(termEntry.getValue().getWeighting(),2);
-			}
-			doc.setVectorLength(Math.sqrt(vectorLength));
-		}
-	}
-
-
 }

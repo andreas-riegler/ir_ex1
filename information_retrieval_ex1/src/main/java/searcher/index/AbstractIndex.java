@@ -115,6 +115,7 @@ public abstract class AbstractIndex {
 			}
 		}
 	}
+	
 	public void deriveDocumentVectorLengths()
 	{
 		for(Document doc : documents)
