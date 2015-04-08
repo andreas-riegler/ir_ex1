@@ -7,18 +7,18 @@ public class Document {
 
 	private String documentId;	
 	private Map<String, TermProperties> documentIndex;
-	private double vectorLenght;
+	private double vectorLength;
 	
 	public Document(){
 		this.documentIndex = new HashMap<String, TermProperties>();
 	}
 	
 	
-	public double getVectorLenght() {
-		return vectorLenght;
+	public double getVectorLength() {
+		return vectorLength;
 	}
-	public void setVectorLenght(double vectorLenght) {
-		this.vectorLenght = vectorLenght;
+	public void setVectorLength(double vectorLength) {
+		this.vectorLength = vectorLength;
 	}
 	public String getDocumentId() {
 		return documentId;

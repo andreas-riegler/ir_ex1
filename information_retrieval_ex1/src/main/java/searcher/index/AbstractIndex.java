@@ -10,6 +10,7 @@ import searcher.model.TermProperties;
 
 public abstract class AbstractIndex {
 
+	//term and document frequency
 	protected Map<String, Integer> index;
 	protected List<Document> documents;
 	
@@ -93,7 +94,6 @@ public abstract class AbstractIndex {
 		if(documentIndex.containsKey(term)){
 			TermProperties termProp = documentIndex.get(term);
 			termProp.incrementTermFrequency();
-			//documentIndex.put(term, documentIndex.get(term) + 1);
 		}
 		else{
 			documentIndex.put(term, new TermProperties());
