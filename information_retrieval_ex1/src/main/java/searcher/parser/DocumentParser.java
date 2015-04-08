@@ -148,7 +148,7 @@ public class DocumentParser implements Runnable{
 			{
 				vectorLength+=Math.pow(termEntry.getValue().getWeighting(),2);
 			}
-			doc.setVectorLenght(Math.sqrt(vectorLength));
+			doc.setVectorLength(Math.sqrt(vectorLength));
 		}
 	}
 

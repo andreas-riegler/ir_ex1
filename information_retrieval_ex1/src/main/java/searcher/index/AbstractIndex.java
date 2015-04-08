@@ -13,21 +13,21 @@ public abstract class AbstractIndex {
 	//term and document frequency
 	protected Map<String, Integer> index;
 	protected List<Document> documents;
-	
+
 	protected int termFrequencyLowerBound;
 	protected int termFrequencyUpperBound;
-	
+
 	int i = 0;
 
 	public AbstractIndex(int termFrequencyLowerBound, int termFrequencyUpperBound){
 		index = new HashMap<String, Integer>();
 		documents = new ArrayList<Document>();
-		
+
 		this.termFrequencyLowerBound = termFrequencyLowerBound;
 		this.termFrequencyUpperBound = termFrequencyUpperBound;
 	}
 
-	
+
 	public int getTermFrequencyLowerBound() {
 		return termFrequencyLowerBound;
 	}
@@ -63,18 +63,18 @@ public abstract class AbstractIndex {
 
 	public void addDocument(Document document, ArrayList<String> terms){
 		addTerms(document, terms);
-	
+
 		if(!documents.contains(document)){
 			documents.add(document);
 			System.out.println("doc added " + ++i);
 		}
-		
+
 	}
 
 	public abstract void addTerms(Document document, ArrayList<String> terms);
 
 	public void putIndexTerm(String term){
-	
+
 		synchronized (index) {
 
 			if(index.containsKey(term)){
@@ -97,6 +97,34 @@ public abstract class AbstractIndex {
 		}
 		else{
 			documentIndex.put(term, new TermProperties());
+		}
+	}
+
+	public void weightDocTerms()
+	{
+		double docCount = index.size();
+		for(Document doc : documents)
+		{
+			for(Map.Entry<String,TermProperties> termEntry: doc.getDocumentIndex().entrySet())
+			{
+				int df = index.get(termEntry.getKey());
+				double idf = Math.log10(docCount/df);
+				double tf = 1 + Math.log10(termEntry.getValue().getTermFrequency());
+				double weight = idf * tf;
+				termEntry.getValue().setWeighting(weight);
+			}
+		}
+	}
+	public void deriveDocumentVectorLengths()
+	{
+		for(Document doc : documents)
+		{
+			double vectorLength = 0;
+			for(Map.Entry<String,TermProperties> termEntry: doc.getDocumentIndex().entrySet())
+			{
+				vectorLength+=Math.pow(termEntry.getValue().getWeighting(),2);
+			}
+			doc.setVectorLength(Math.sqrt(vectorLength));
 		}
 	}
 
