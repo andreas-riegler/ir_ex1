@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import searcher.model.Document;
+import searcher.model.TermProperties;
 
 public abstract class AbstractIndex {
 
@@ -89,13 +90,15 @@ public abstract class AbstractIndex {
 
 	public void putDocumentIndexTerm(Document document, String term) {
 
-		Map<String, Integer> documentIndex = document.getDocumentIndex();
+		Map<String, TermProperties> documentIndex = document.getDocumentIndex();
 
 		if(documentIndex.containsKey(term)){
-			documentIndex.put(term, documentIndex.get(term) + 1);
+			TermProperties termProp = documentIndex.get(term);
+			termProp.incrementTermFrequency();
+			//documentIndex.put(term, documentIndex.get(term) + 1);
 		}
 		else{
-			documentIndex.put(term, 1);
+			documentIndex.put(term, new TermProperties());
 		}
 	}
 

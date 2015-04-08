@@ -6,13 +6,12 @@ import java.util.Map;
 public class Document {
 
 	private String documentId;	
-	private Map<String, Integer> documentIndex;
+	private Map<String, TermProperties> documentIndex;
 	private double vectorLenght;
 	
 	public Document(){
-		this.documentIndex = new HashMap<String, Integer>();
+		this.documentIndex = new HashMap<String, TermProperties>();
 	}
-	
 	
 	
 	public double getVectorLenght() {
@@ -28,12 +27,13 @@ public class Document {
 	public void setDocumentId(String documentId) {
 		this.documentId = documentId;
 	}
-	
-	public Map<String, Integer> getDocumentIndex() {
+
+	public Map<String, TermProperties> getDocumentIndex() {
 		return documentIndex;
 	}
-	
-	public void setDocumentIndex(Map<String, Integer> documentIndex) {
+
+	public void setDocumentIndex(Map<String, TermProperties> documentIndex) {
 		this.documentIndex = documentIndex;
 	}
+	
 }

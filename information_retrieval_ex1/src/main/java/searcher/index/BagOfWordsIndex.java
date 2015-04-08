@@ -8,8 +8,8 @@ import searcher.model.Document;
 public class BagOfWordsIndex extends AbstractIndex{
 
 
-	public BagOfWordsIndex() {
-		super();
+	public BagOfWordsIndex(int termFrequencyLowerBound,	int termFrequencyUpperBound) {
+		super(termFrequencyLowerBound, termFrequencyUpperBound);
 	}
 
 	@Override

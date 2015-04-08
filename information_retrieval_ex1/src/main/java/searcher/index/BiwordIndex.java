@@ -7,8 +7,8 @@ import searcher.model.Document;
 
 public class BiwordIndex extends AbstractIndex{
 
-	public BiwordIndex() {
-		super();
+	public BiwordIndex(int termFrequencyLowerBound, int termFrequencyUpperBound) {
+		super(termFrequencyLowerBound, termFrequencyUpperBound);
 	}
 
 	@Override
