@@ -14,26 +14,11 @@ public class BagOfWordsIndex extends AbstractIndex{
 
 	@Override
 	public void addTerms(Document document, ArrayList<String> terms) {
-
-		Map<String, Integer> documentIndex = document.getDocumentIndex();
-		
+	
 		for(String term : terms){
 
-			if(index.containsKey(term)){
-				index.put(term, index.get(term) + 1);
-			}
-			else{
-				index.put(term, 1);
-			}
-			
-			if(documentIndex.containsKey(term)){
-				documentIndex.put(term, documentIndex.get(term) + 1);
-			}
-			else{
-				documentIndex.put(term, 1);
-			}
-		}
-		
-		System.out.println(documentIndex);
+			putIndexTerm(term);			
+			putDocumentIndexTerm(document, term);
+		}	
 	}
 }

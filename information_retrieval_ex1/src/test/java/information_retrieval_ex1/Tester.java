@@ -13,13 +13,13 @@ public class Tester {
 		AbstractIndex index = new BagOfWordsIndex();
 		//PorterStemmer stemmer = new PorterStemmer();
 		
-		Searcher searcher = new Searcher(index, null, "porter", 0, 100);
+		//Searcher searcher = new Searcher(index, null, "porter", 0, 100);
 		
 		File input = new File("D:/uni/Information Retrieval/20_newsgroups_subset");
 		
 		System.out.println(input.exists());
 		
-		searcher.parseDocuments(input);
+		//searcher.parseDocuments(input);
 		
 	}
 	
