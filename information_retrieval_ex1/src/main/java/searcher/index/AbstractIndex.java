@@ -11,14 +11,37 @@ public abstract class AbstractIndex {
 
 	protected Map<String, Integer> index;
 	protected List<Document> documents;
+	
+	protected int termFrequencyLowerBound;
+	protected int termFrequencyUpperBound;
+	
 	int i = 0;
 
-	public AbstractIndex(){
+	public AbstractIndex(int termFrequencyLowerBound, int termFrequencyUpperBound){
 		index = new HashMap<String, Integer>();
 		documents = new ArrayList<Document>();
+		
+		this.termFrequencyLowerBound = termFrequencyLowerBound;
+		this.termFrequencyUpperBound = termFrequencyUpperBound;
 	}
 
 	
+	public int getTermFrequencyLowerBound() {
+		return termFrequencyLowerBound;
+	}
+
+	public void setTermFrequencyLowerBound(int termFrequencyLowerBound) {
+		this.termFrequencyLowerBound = termFrequencyLowerBound;
+	}
+
+	public int getTermFrequencyUpperBound() {
+		return termFrequencyUpperBound;
+	}
+
+	public void setTermFrequencyUpperBound(int termFrequencyUpperBound) {
+		this.termFrequencyUpperBound = termFrequencyUpperBound;
+	}
+
 	public Map<String, Integer> getIndex() {
 		return index;
 	}
