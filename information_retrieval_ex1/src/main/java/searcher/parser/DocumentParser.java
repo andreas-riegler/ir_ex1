@@ -18,14 +18,13 @@ import searcher.model.Document;
 public class DocumentParser implements Runnable{
 
 	private int tflowerBound,tfupperBound;
-	private String stopWordList;
 	private AbstractIndex index;
-	private File file;
+	private File file,stopWordList;
 	private List<String> stopWords;
 	private String stemmer="porter";
 	
 	public DocumentParser(int tflowerBound, int tfupperBound,
-			AbstractIndex index, String stemmer,String stopWordList, File file) {
+			AbstractIndex index, String stemmer,File stopWordList, File file) {
 		this.index=index;
 		this.stopWordList=stopWordList;
 		this.tflowerBound=tflowerBound;
