@@ -54,29 +54,32 @@ public class DocumentParser implements Runnable{
 
 		document = new Document();
 		document.setDocumentId(file.getParentFile().getName()+"/"+file.getName());
-		index.addDocument(document,normalizeToken(parseDocument(file)));
+
+		if(index != null){
+			index.addDocument(document,normalizeToken(parseDocument(file)));
+		}
 	}
 
 
 	private ArrayList<String> parseDocument(File file) {
-		
+
 		FileInputStream input = null;
 		ArrayList<String> tokenList=new ArrayList<String>();
-		
+
 		try {
-			
+
 			input = new FileInputStream(file);
-			
+
 		} catch (FileNotFoundException e) {
 			System.out.println("File not found");
 		}
-		
+
 		BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 
 		try {
-			
+
 			String line=reader.readLine();
-			
+
 			while(line!=null)
 			{
 				String[]token = line.split(" ");
@@ -87,7 +90,7 @@ public class DocumentParser implements Runnable{
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 		}
-		
+
 		return tokenList;
 	}
 
