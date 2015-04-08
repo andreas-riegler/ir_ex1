@@ -73,6 +73,8 @@ public abstract class AbstractIndex {
 
 	public void putIndexTerm(String term){
 
+		//nur 1 für pro doc
+		
 		synchronized (index) {
 
 			if(index.containsKey(term)){

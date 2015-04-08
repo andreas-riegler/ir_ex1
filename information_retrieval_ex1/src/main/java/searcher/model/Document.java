@@ -7,12 +7,20 @@ public class Document {
 
 	private String documentId;	
 	private Map<String, Integer> documentIndex;
-	
+	private double vectorLenght;
 	
 	public Document(){
 		this.documentIndex = new HashMap<String, Integer>();
 	}
 	
+	
+	
+	public double getVectorLenght() {
+		return vectorLenght;
+	}
+	public void setVectorLenght(double vectorLenght) {
+		this.vectorLenght = vectorLenght;
+	}
 	public String getDocumentId() {
 		return documentId;
 	}
