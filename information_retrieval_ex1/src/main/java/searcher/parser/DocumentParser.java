@@ -139,6 +139,18 @@ public class DocumentParser implements Runnable{
 			}
 		}
 	}
+	public void deriveDocumentVectorLengths()
+	{
+		for(Document doc:index.getDocuments())
+		{
+			double vectorLength=0;
+			for(Map.Entry<String,TermProperties> termEntry: doc.getDocumentIndex().entrySet())
+			{
+				vectorLength+=Math.pow(termEntry.getValue().getWeighting(),2);
+			}
+			doc.setVectorLenght(Math.sqrt(vectorLength));
+		}
+	}
 
 
 }
