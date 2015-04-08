@@ -100,6 +100,32 @@ public abstract class AbstractIndex {
 		}
 	}
 
+	public void checkTermFrequencyBounds(){
+
+		for(Document doc : documents){
+			
+			List<String> termsExceedingBounds = new ArrayList<String>();
+			
+			//System.out.println(doc == null); ==> doc manchmal null
+			
+			for(Map.Entry<String,TermProperties> termEntry: doc.getDocumentIndex().entrySet()) {
+				if(termEntry.getValue().getTermFrequency() > this.termFrequencyUpperBound || termEntry.getValue().getTermFrequency() < this.termFrequencyLowerBound){
+					termsExceedingBounds.add(termEntry.getKey());
+				}
+			}
+			
+			for(String term : termsExceedingBounds){
+				
+				//removing from document index
+				doc.getDocumentIndex().remove(term);
+				
+				//decreasing documentFrequency
+				index.put(term, index.get(term) - 1);
+			}
+		}
+
+	}
+
 	public void weightDocTerms()
 	{
 		double docCount = index.size();
@@ -115,7 +141,7 @@ public abstract class AbstractIndex {
 			}
 		}
 	}
-	
+
 	public void deriveDocumentVectorLengths()
 	{
 		for(Document doc : documents)

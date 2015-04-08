@@ -3,6 +3,7 @@ package searcher;
 import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.kohsuke.args4j.Option;
 
@@ -68,7 +69,27 @@ public class Searcher {
 			}
 		}
 		
+		thPool.shutdown();
+		
+        try {
+        	thPool.awaitTermination(10, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+        	System.out.println(e.getMessage());
+            System.exit(-1);
+        }
 
     }
+	
+	public void checkTermFrequencyBounds(){
+		this.index.checkTermFrequencyBounds();
+	}
+	
+	public void weightDocTerms(){
+		this.index.weightDocTerms();
+	}
+	
+	public void deriveDocumentVectorLengths(){
+		this.index.deriveDocumentVectorLengths();
+	}
 
 }
