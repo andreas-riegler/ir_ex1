@@ -17,7 +17,10 @@ public class BagOfWordsIndex extends AbstractIndex{
 	
 		for(String term : terms){
 
-			putIndexTerm(term);			
+			if(!document.getDocumentIndex().containsKey(term)){
+				putIndexTerm(term);
+			}
+			
 			putDocumentIndexTerm(document, term);
 		}	
 	}

@@ -73,9 +73,7 @@ public abstract class AbstractIndex {
 	public abstract void addTerms(Document document, ArrayList<String> terms);
 
 	public void putIndexTerm(String term){
-
-		//nur 1 für pro doc
-		
+	
 		synchronized (index) {
 
 			if(index.containsKey(term)){

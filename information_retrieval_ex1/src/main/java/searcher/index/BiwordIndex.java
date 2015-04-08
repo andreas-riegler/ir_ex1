@@ -20,7 +20,10 @@ public class BiwordIndex extends AbstractIndex{
 
 			String biword = termsArray[i] + " " + termsArray[i + 1];
 
-			putIndexTerm(biword);
+			if(!document.getDocumentIndex().containsKey(biword)){
+				putIndexTerm(biword);
+			}
+			
 			putDocumentIndexTerm(document, biword);
 			
 		}
