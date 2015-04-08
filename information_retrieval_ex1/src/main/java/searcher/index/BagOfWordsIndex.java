@@ -33,5 +33,7 @@ public class BagOfWordsIndex extends AbstractIndex{
 				documentIndex.put(term, 1);
 			}
 		}
+		
+		System.out.println(documentIndex);
 	}
 }

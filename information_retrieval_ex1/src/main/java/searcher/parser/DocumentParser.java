@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 
 import searcher.index.AbstractIndex;
@@ -20,7 +21,7 @@ public class DocumentParser implements Runnable{
 	private String stopWordList;
 	private AbstractIndex index;
 	private File file;
-	private ArrayList<String> stopWords;
+	private List<String> stopWords;
 	private String stemmer="porter";
 	
 	public DocumentParser(int tflowerBound, int tfupperBound,
@@ -30,6 +31,8 @@ public class DocumentParser implements Runnable{
 		this.tflowerBound=tflowerBound;
 		this.tfupperBound=tfupperBound;
 		this.file=file;
+		
+		stopWords = new ArrayList<String>();
 		
 		if(stemmer!=null)
 		{
@@ -41,7 +44,7 @@ public class DocumentParser implements Runnable{
 	public void run() {
 		if(stopWordList!=null)
         {
-			stopWords=parseDocument(file);
+			stopWords=parseDocument(stopWordList);
         }
 		Document doc=new Document();
 		doc.setDocumentId(file.getParentFile().getName()+"/"+file.getName());

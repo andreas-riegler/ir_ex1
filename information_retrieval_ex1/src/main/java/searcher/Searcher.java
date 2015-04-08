@@ -29,7 +29,7 @@ public class Searcher {
         for (File dir : dirs) {
         	if(dir.isDirectory()){
         		for (File file : dir.listFiles()) {
-        			if(dir.isFile())
+        			if(file.isFile())
         			{
         				thPool.execute(new DocumentParser(tflowerBound,tfupperBound,index, stemmer,stopWordList, file));
         			}
