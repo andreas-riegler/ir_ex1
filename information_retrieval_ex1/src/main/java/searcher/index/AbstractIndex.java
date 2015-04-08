@@ -60,6 +60,7 @@ public abstract class AbstractIndex {
 		this.documents = documents;
 	}
 
+	public abstract void addTerms(Document document, ArrayList<String> terms);
 
 	public void addDocument(Document document, ArrayList<String> terms){
 		addTerms(document, terms);
@@ -70,8 +71,6 @@ public abstract class AbstractIndex {
 		}
 
 	}
-
-	public abstract void addTerms(Document document, ArrayList<String> terms);
 
 	public void putIndexTerm(String term){
 
