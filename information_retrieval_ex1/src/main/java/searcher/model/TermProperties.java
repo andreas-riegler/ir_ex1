@@ -3,7 +3,7 @@ package searcher.model;
 public class TermProperties {
 
 	private int termFrequency;
-	private int weighting;
+	private double weighting;
 
 	public TermProperties(){
 		this.termFrequency = 0;
@@ -15,10 +15,10 @@ public class TermProperties {
 	public void setTermFrequency(int termFrequency) {
 		this.termFrequency = termFrequency;
 	}
-	public int getWeighting() {
+	public double getWeighting() {
 		return weighting;
 	}
-	public void setWeighting(int weighting) {
+	public void setWeighting(double weighting) {
 		this.weighting = weighting;
 	}
 

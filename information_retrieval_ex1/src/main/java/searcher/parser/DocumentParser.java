@@ -11,24 +11,24 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import searcher.index.AbstractIndex;
 import searcher.model.Document;
+import searcher.model.TermProperties;
 
 public class DocumentParser implements Runnable{
 
-	private int tflowerBound,tfupperBound;
+
 	private AbstractIndex index;
 	private File file,stopWordList;
 	private List<String> stopWords;
 	private String stemmer="porter";
 	
-	public DocumentParser(int tflowerBound, int tfupperBound,
+	public DocumentParser(
 			AbstractIndex index, String stemmer,File stopWordList, File file) {
 		this.index=index;
 		this.stopWordList=stopWordList;
-		this.tflowerBound=tflowerBound;
-		this.tfupperBound=tfupperBound;
 		this.file=file;
 		
 		stopWords = new ArrayList<String>();
@@ -122,6 +122,22 @@ public class DocumentParser implements Runnable{
 
 	        }
 		return terms;
+	}
+	
+	public void weightDocTerms()
+	{
+		double docCount=index.getIndex().size();
+		for(Document doc:index.getDocuments())
+		{
+			for(Map.Entry<String,TermProperties> termEntry: doc.getDocumentIndex().entrySet())
+			{
+				int df=index.getIndex().get(termEntry.getKey());
+				double idf=Math.log10(docCount/df);
+				double tf=1+Math.log10(termEntry.getValue().getTermFrequency());
+				double weight=idf*tf;
+				termEntry.getValue().setWeighting(weight);
+			}
+		}
 	}
 
 

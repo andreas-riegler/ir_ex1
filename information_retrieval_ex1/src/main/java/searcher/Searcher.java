@@ -29,10 +29,9 @@ public class Searcher {
 	 @Option(name="-idx",usage="Sets the prefered Index(bagofwords,biword)")
 	private IndexTyp indexTyp=IndexTyp.BAGOFWORDS;
 	 
-	 @Option(name="-n",usage="Sets the Path to the Rootdirectory")
+	 @Option(name="-n",usage="Sets the Path to the Rootdirectory",required=true)
 	private File rootDir;
-	 @Option(name="-l",usage="Sets the Name of the stored Index",forbids="-n")
-	private String loadDir;
+	
 	 
 	private AbstractIndex index;
 	private ExecutorService thPool;
@@ -46,28 +45,29 @@ public class Searcher {
        
 		if(indexTyp.equals(IndexTyp.BAGOFWORDS))
 		{
-			index=new BagOfWordsIndex();
+			index=new BagOfWordsIndex(tflowerBound,
+					tfupperBound);
 			
 		}
 		else
 		{
-			index=new BiwordIndex();
+			index=new BiwordIndex(tflowerBound,
+					tfupperBound);
 		}
-		if (rootDir != null) {
-			File[] dirs = rootDir.listFiles();
 
-			for (File dir : dirs) {
-				if (dir.isDirectory()) {
-					for (File file : dir.listFiles()) {
-						if (file.isFile()) {
-							thPool.execute(new DocumentParser(tflowerBound,
-									tfupperBound, index, stemmer.toString(),
-									stopWordList, file));
-						}
+		File[] dirs = rootDir.listFiles();
+
+		for (File dir : dirs) {
+			if (dir.isDirectory()) {
+				for (File file : dir.listFiles()) {
+					if (file.isFile()) {
+						thPool.execute(new DocumentParser(index, stemmer.toString(),
+								stopWordList, file));
 					}
 				}
 			}
 		}
+		
 
     }
 
