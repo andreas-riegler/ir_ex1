@@ -49,22 +49,30 @@ public class BasicSearcher {
                 while(!input.equals("q"))
                 {
                 	Document queryDoc=searcher.parseTopic(input);
-                	TreeMap<Document,Double> resultMap=searcher.searchSimilarDocuments(queryDoc);
                 	
-                	System.out.println("Result list:");
-                	int counter=0;
-        			for(Map.Entry<Document, Double> resultEntry:resultMap.entrySet())
-        			{
-        				counter++;
-        				
-        				String output=queryDoc.getDocumentId()+" Q0 "+resultEntry.getKey().getDocumentId()+" "+counter+" "+resultEntry.getValue()+" "+searcher.getRunName();
-        				System.out.println(output);
-        				if(counter==100)
-        				{
-        					break;
-        				}
-        			}
-        			System.out.println("Topic to search for(Quit with q):");
+                	if (queryDoc != null) {
+                		TreeMap<Document, Double> resultMap = searcher.searchSimilarDocuments(queryDoc);
+
+                		System.out.println("Result list:");
+                		int counter = 0;
+                		for (Map.Entry<Document, Double> resultEntry : resultMap.entrySet()) {
+                			counter++;
+
+                			String output = queryDoc.getDocumentId() + " Q0 "
+								+ resultEntry.getKey().getDocumentId() + " "
+								+ counter + " " + resultEntry.getValue() + " "
+								+ searcher.getRunName();
+                			System.out.println(output);
+                			if (counter == 100) {
+                				break;
+                			}
+                		}
+                	} 
+                	else 
+                	{
+                		System.out.println("No such Topicname!");
+                	}
+					System.out.println("Topic to search for(Quit with q):");
         			input = scanner.nextLine();
                 }
                 System.out.println("Program terminated");
