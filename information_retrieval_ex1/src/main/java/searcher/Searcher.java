@@ -24,26 +24,29 @@ enum Stemmer{PORTER,LOVINS,LANCASTER}
 
 public class Searcher {
 
-	@Option(name="-tflb",usage="Sets the Termfrequency lowerbound")
+	@Option(name="-tflb", aliases="--tflowerbound",usage="sets the term frequency lowerbound")
 	private int tflowerBound=0;
 
-	@Option(name="-tfub",usage="Sets the Termfrequency upperbound")
+	@Option(name="-tfub", aliases="--tfupperbound",usage="sets the term frequency upperbound")
 	private int tfupperBound=Integer.MAX_VALUE;
 
-	@Option(name="-swl",usage="Sets the Path to the Stopwordlist")
+	@Option(name="-swl", aliases="--stopwordlist",usage="sets the path to the stopword list")
 	private File stopWordList;
 
-	@Option(name="-stem",usage="Sets the prefered Stemmer(porter,lovins,lancaster)")
+	@Option(name="-stem", aliases="--stemmer",usage="sets the preferred stemmer (porter, lovins, lancaster)")
 	private Stemmer stemmer=Stemmer.PORTER;
 
-	@Option(name="-idx",usage="Sets the prefered Index(bagofwords,biword)")
+	@Option(name="-idx", aliases="--index",usage="sets the preferred index (bagofwords, biword)")
 	private IndexType indexTyp=IndexType.BAGOFWORDS;
 
-	@Option(name="-n",usage="Sets the Path to the Rootdirectory",required=true)
+	@Option(name="-nd", aliases="--newsdir",usage="sets the path to the newsgroups root directory",required=true)
 	private File rootDir;
 	
-	@Option(name="-rn",usage="Sets the Name of the Run",required=true)
+	@Option(name="-rn", aliases="--runname",usage="sets the name of the run",required=true)
 	private String runName;
+	
+	@Option(name="-td", aliases="--topicdir",usage="sets the path to the topic directory",required=true)
+	private String topicDirectory;
 
 
 	private AbstractIndex index;
