@@ -6,7 +6,7 @@ public class TermProperties {
 	private double weighting;
 
 	public TermProperties(){
-		this.termFrequency = 0;
+		this.termFrequency = 1;
 	}
 
 	public int getTermFrequency() {

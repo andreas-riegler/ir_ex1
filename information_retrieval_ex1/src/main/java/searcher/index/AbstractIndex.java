@@ -155,11 +155,11 @@ public abstract class AbstractIndex {
 			termEntry.getValue().setWeighting(deriveWeight(index.size()+1,df,termEntry.getValue().getTermFrequency()));
 		}
 	}
-	public double deriveWeight(double docCount,int df,int tf)
+	public double deriveWeight(double docCount,double df,double tf)
 	{
 		double idf = Math.log10(docCount/df);
 		double wtf = 1 + Math.log10(tf);
-		return idf * tf;
+		return idf * wtf;
 	}
 
 	public void deriveDocumentVectorLengths()

@@ -14,7 +14,7 @@ import searcher.model.Document;
 public class BasicSearcher {
 	public static void main(String[] args) {
 		
-		File topicDir=new File("");
+		File topicDir=new File("C:\\Users\\Klaus\\Documents\\topics");
 		
 		Searcher searcher=new Searcher();
 		CmdLineParser parser = new CmdLineParser(searcher);

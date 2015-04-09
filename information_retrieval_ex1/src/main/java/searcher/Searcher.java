@@ -121,15 +121,20 @@ public class Searcher {
 	{
 		Map<Document,Double> resultMap=new HashMap<Document,Double>();
 		
-		double queryVectorLength=queryDoc.getVectorLength();
+		deriveQueryVectorLength(queryDoc);
 		for(Document doc:index.getDocuments())
 		{
 			double matchedTermWeights=0;
 			for(Map.Entry<String,TermProperties> termEntry: queryDoc.getDocumentIndex().entrySet())
 			{
-				matchedTermWeights+=doc.getDocumentIndex().get(termEntry.getKey()).getWeighting()*termEntry.getValue().getWeighting();
+				TermProperties termProp=doc.getDocumentIndex().get(termEntry.getKey());
+				if(termProp!=null)
+				{
+					matchedTermWeights+=termProp.getWeighting()*termEntry.getValue().getWeighting();
+				}
 			}
-			double similarity=matchedTermWeights/(queryVectorLength*doc.getVectorLength());
+			double similarity=matchedTermWeights/(queryDoc.getVectorLength()*doc.getVectorLength());
+			
 			resultMap.put(doc,similarity);
 		}
 		ValueComparator vc =  new ValueComparator(resultMap);
@@ -150,6 +155,15 @@ public class Searcher {
 	public void deriveDocumentVectorLengths(){
 		this.index.deriveDocumentVectorLengths();
 	}
+	public void deriveQueryVectorLength(Document queryDoc)
+	{
+		double vectorLength = 0;
+		for(Map.Entry<String,TermProperties> termEntry: queryDoc.getDocumentIndex().entrySet())
+		{
+			vectorLength+=Math.pow(termEntry.getValue().getWeighting(),2);
+		}
+		queryDoc.setVectorLength(Math.sqrt(vectorLength));
+	}
 	
 
 }
@@ -162,9 +176,9 @@ class ValueComparator implements Comparator<Document> {
    
     public int compare(Document a, Document b) {
         if (base.get(a) >= base.get(b)) {
-            return 1;
-        } else {
             return -1;
+        } else {
+            return 1;
         } 
     }
 }

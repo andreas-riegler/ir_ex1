@@ -20,13 +20,13 @@ public class DocumentParser implements Runnable{
 	private File file,stopWordList;
 	private List<String> stopWords;
 	private String stemmer="porter";
-	private Boolean isQuery=false;
+	private Boolean isQuery;
 
 	public DocumentParser(AbstractIndex index, String stemmer,File stopWordList, File file) {
 		this.index=index;
 		this.stopWordList=stopWordList;
 		this.file=file;
-
+		this.isQuery=false;
 		stopWords = new ArrayList<String>();
 
 		if(stemmer!=null)
@@ -69,7 +69,7 @@ public class DocumentParser implements Runnable{
 		document = new Document();
 		
 
-		if(isQuery!=false){
+		if(isQuery==false){
 			document.setDocumentId(file.getParentFile().getName()+"/"+file.getName());
 			index.addDocument(document,normalizeToken(parseDocument(file)));
 		}
