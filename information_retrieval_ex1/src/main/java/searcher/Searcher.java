@@ -135,6 +135,7 @@ public class Searcher {
 		ValueComparator vc =  new ValueComparator(resultMap);
         TreeMap<Document,Double> sortedresultMap = new TreeMap<Document,Double>(vc);
         sortedresultMap.putAll(resultMap);
+        
 		return sortedresultMap;
 	}
 

@@ -24,4 +24,13 @@ public class BagOfWordsIndex extends AbstractIndex{
 			putDocumentIndexTerm(document, term);
 		}	
 	}
+
+	@Override
+	public void addQueryTerms(Document document, ArrayList<String> terms) {
+		for(String term : terms){
+			
+			putDocumentIndexTerm(document, term);
+		}	
+		
+	}
 }

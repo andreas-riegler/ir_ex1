@@ -28,4 +28,18 @@ public class BiwordIndex extends AbstractIndex{
 			
 		}
 	}
+
+	@Override
+	public void addQueryTerms(Document document, ArrayList<String> terms) {
+		String [] termsArray = (String []) terms.toArray();
+
+		for(int i = 0; i < terms.size() - 1; i++){
+
+			String biword = termsArray[i] + " " + termsArray[i + 1];
+			
+			putDocumentIndexTerm(document, biword);
+			
+		}
+		
+	}
 }

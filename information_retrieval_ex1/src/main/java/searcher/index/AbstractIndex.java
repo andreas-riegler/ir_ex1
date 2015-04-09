@@ -61,6 +61,7 @@ public abstract class AbstractIndex {
 	}
 
 	public abstract void addTerms(Document document, ArrayList<String> terms);
+	public abstract void addQueryTerms(Document document, ArrayList<String> terms);
 
 	public void addDocument(Document document, ArrayList<String> terms){
 		addTerms(document, terms);
@@ -141,8 +142,17 @@ public abstract class AbstractIndex {
 	{
 		for(Map.Entry<String,TermProperties> termEntry: queryDoc.getDocumentIndex().entrySet())
 		{
+			int df;
+			if(index.get(termEntry.getKey())!=null)
+			{
+				df=index.get(termEntry.getKey());
+			}
+			else
+			{
+				df=1;
+			}
 			
-			termEntry.getValue().setWeighting(deriveWeight(index.size(),index.get(termEntry.getKey()),termEntry.getValue().getTermFrequency()));
+			termEntry.getValue().setWeighting(deriveWeight(index.size()+1,df,termEntry.getValue().getTermFrequency()));
 		}
 	}
 	public double deriveWeight(double docCount,int df,int tf)
