@@ -46,7 +46,7 @@ public class Searcher {
 	private String runName;
 	
 	@Option(name="-td", aliases="--topicdir",usage="sets the path to the topic directory",required=true)
-	private String topicDirectory;
+	private File topicDirectory;
 
 
 	private AbstractIndex index;
@@ -106,8 +106,9 @@ public class Searcher {
 
 	}
 
-	public Document parseTopic(File topicFile){
+	public Document parseTopic(String topicName){
 
+		File topicFile=new File(topicDirectory+"\\"+topicName);
 		if(topicFile.exists()){
 			
 			DocumentParser docParser = new DocumentParser(index, stemmer.toString(), stopWordList, topicFile,true);
@@ -167,6 +168,7 @@ public class Searcher {
 		}
 		queryDoc.setVectorLength(Math.sqrt(vectorLength));
 	}
+
 	
 
 }
