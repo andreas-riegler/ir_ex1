@@ -15,8 +15,6 @@ import searcher.model.Document;
 public class BasicSearcher {
 	public static void main(String[] args) {
 		
-		File topicDir=new File("C:\\Users\\Klaus\\Documents\\topics");
-		
 		Searcher searcher=new Searcher();
 		Scanner scanner = new Scanner(System.in);
 		
@@ -53,6 +51,7 @@ public class BasicSearcher {
                 	Document queryDoc=searcher.parseTopic(input);
                 	TreeMap<Document,Double> resultMap=searcher.searchSimilarDocuments(queryDoc);
                 	
+                	System.out.println("Result list:");
                 	int counter=0;
         			for(Map.Entry<Document, Double> resultEntry:resultMap.entrySet())
         			{
@@ -68,7 +67,7 @@ public class BasicSearcher {
         			System.out.println("Topic to search for(Quit with q):");
         			input = scanner.nextLine();
                 }
-        
+                System.out.println("Program terminated");
                 
         } catch (CmdLineException e) {
           

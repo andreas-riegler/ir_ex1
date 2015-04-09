@@ -152,7 +152,7 @@ public abstract class AbstractIndex {
 				df=1;
 			}
 			
-			termEntry.getValue().setWeighting(deriveWeight(index.size()+1,df,termEntry.getValue().getTermFrequency()));
+			termEntry.getValue().setWeighting(deriveWeight(index.size(),df,termEntry.getValue().getTermFrequency()));
 		}
 	}
 	public double deriveWeight(double docCount,double df,double tf)

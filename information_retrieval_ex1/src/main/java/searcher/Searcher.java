@@ -125,9 +125,12 @@ public class Searcher {
 	{
 		Map<Document,Double> resultMap=new HashMap<Document,Double>();
 		
+		//Derive Query-Vectorlength
 		deriveQueryVectorLength(queryDoc);
+		
 		for(Document doc:index.getDocuments())
 		{
+			//Derive numerator of Cosinusformula
 			double matchedTermWeights=0;
 			for(Map.Entry<String,TermProperties> termEntry: queryDoc.getDocumentIndex().entrySet())
 			{
@@ -137,10 +140,14 @@ public class Searcher {
 					matchedTermWeights+=termProp.getWeighting()*termEntry.getValue().getWeighting();
 				}
 			}
+			
+			//Apply Cosinusfurmula
 			double similarity=matchedTermWeights/(queryDoc.getVectorLength()*doc.getVectorLength());
 			
 			resultMap.put(doc,similarity);
 		}
+		
+		//Instantiate a Comperator and sort Documents respectively to the similarity
 		ValueComparator vc =  new ValueComparator(resultMap);
         TreeMap<Document,Double> sortedresultMap = new TreeMap<Document,Double>(vc);
         sortedresultMap.putAll(resultMap);

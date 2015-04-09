@@ -104,7 +104,10 @@ public class DocumentParser implements Runnable{
 
 			while(line!=null)
 			{
+				//Split line in Token
 				String[]token = line.split(" ");
+				
+				//Add token to Array of all previous splitted Documenttoken
 				tokenList.addAll(Arrays.asList(token));
 				line = reader.readLine();
 			}
@@ -121,26 +124,37 @@ public class DocumentParser implements Runnable{
 
 		for (String token : parseDocument) {
 
+			//Trim Token
 			token = token.trim();
+			
+			//Lowercase Token
 			token = token.toLowerCase(Locale.ENGLISH);
+			
+			//Replace Specialcharacters at the beginning of the Token
 			token = token.replaceAll("^[^a-zA-Z0-9]+", "");
+			
+			//Replace Specialcharacters at the ending of the Token
 			token = token.replaceAll("[^a-zA-Z0-9]+$", "");
 			
+			//Skip Stopwords
 			if(!stopWords.contains(token))
 			{
 
-			
+				//Stem Token
 				switch (stemmer) {
+				//Porterstemmer
 				case "porter": {
 					Stemmer ps = new Stemmer();
 					ps.add(token.toCharArray(), token.length());
 					ps.stem();
 					token = ps.toString();
 				}
+				//Lovinsstemmer
 				case "lovins": {
 					LovinsStemmer ls = new LovinsStemmer();
 					token = ls.stem(token);
 				}
+				//Lancasterstemmer
 				case "lancaster": {
 					LancasterStemmer las = new LancasterStemmer();
 					token = las.stem(token);
