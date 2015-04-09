@@ -125,33 +125,32 @@ public class DocumentParser implements Runnable{
 			token = token.toLowerCase(Locale.ENGLISH);
 			token = token.replaceAll("^[^a-zA-Z0-9]+", "");
 			token = token.replaceAll("[^a-zA-Z0-9]+$", "");
+			
 			if(!stopWords.contains(token))
 			{
 
-			}
-			switch(stemmer){
-			case "porter":
-			{
-				Stemmer ps = new Stemmer();
-				ps.add(token.toCharArray(), token.length());
-				ps.stem();
-				token = ps.toString();
-			}
-			case "lovins":
-			{
-				LovinsStemmer ls=new LovinsStemmer();
-				token=ls.stem(token);
-			}
-			case "lancaster":
-			{
-				LancasterStemmer las=new LancasterStemmer();
-				token=las.stem(token);
+			
+				switch (stemmer) {
+				case "porter": {
+					Stemmer ps = new Stemmer();
+					ps.add(token.toCharArray(), token.length());
+					ps.stem();
+					token = ps.toString();
+				}
+				case "lovins": {
+					LovinsStemmer ls = new LovinsStemmer();
+					token = ls.stem(token);
+				}
+				case "lancaster": {
+					LancasterStemmer las = new LancasterStemmer();
+					token = las.stem(token);
 
-			}
-			}
+				}
+				}
 
-			if (!token.isEmpty()) {
-				terms.add(token);
+				if (!token.isEmpty()) {
+					terms.add(token);
+				}
 			}
 
 		}
