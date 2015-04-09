@@ -1,6 +1,11 @@
 package searcher;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -11,6 +16,7 @@ import searcher.index.AbstractIndex;
 import searcher.index.BagOfWordsIndex;
 import searcher.index.BiwordIndex;
 import searcher.model.Document;
+import searcher.model.TermProperties;
 import searcher.parser.DocumentParser;
 
 enum IndexType{BAGOFWORDS,BIWORD}
@@ -35,8 +41,10 @@ public class Searcher {
 
 	@Option(name="-n",usage="Sets the Path to the Rootdirectory",required=true)
 	private File rootDir;
+	
+	@Option(name="-rn",usage="Sets the Name of the Run",required=true)
+	private String runName;
 
-	private File topicFile;
 
 	private AbstractIndex index;
 	private ExecutorService thPool;
@@ -45,6 +53,17 @@ public class Searcher {
 	{
 		thPool=Executors.newFixedThreadPool(5);
 	}
+	
+
+	public String getRunName() {
+		return runName;
+	}
+
+
+	public void setRunName(String runName) {
+		this.runName = runName;
+	}
+
 
 	public void parseDocuments() {
 
@@ -84,18 +103,39 @@ public class Searcher {
 
 	}
 
-	public Document parseTopic(){
+	public Document parseTopic(File topicFile){
 
 		if(topicFile.exists()){
 			
-			DocumentParser docParser = new DocumentParser(null, stemmer.toString(), stopWordList, topicFile);
+			DocumentParser docParser = new DocumentParser(index, stemmer.toString(), stopWordList, topicFile,true);
 			docParser.run();
 			Document parsedTopic = docParser.getDocument();
+			index.weightQueryTerms(parsedTopic);
 			return parsedTopic;
 		}
 		else{
 			return null;
 		}
+	}
+	public TreeMap<Document,Double> searchSimilarDocuments(Document queryDoc)
+	{
+		Map<Document,Double> resultMap=new HashMap<Document,Double>();
+		
+		double queryVectorLength=queryDoc.getVectorLength();
+		for(Document doc:index.getDocuments())
+		{
+			double matchedTermWeights=0;
+			for(Map.Entry<String,TermProperties> termEntry: queryDoc.getDocumentIndex().entrySet())
+			{
+				matchedTermWeights+=doc.getDocumentIndex().get(termEntry.getKey()).getWeighting()*termEntry.getValue().getWeighting();
+			}
+			double similarity=matchedTermWeights/(queryVectorLength*doc.getVectorLength());
+			resultMap.put(doc,similarity);
+		}
+		ValueComparator vc =  new ValueComparator(resultMap);
+        TreeMap<Document,Double> sortedresultMap = new TreeMap<Document,Double>(vc);
+        sortedresultMap.putAll(resultMap);
+		return sortedresultMap;
 	}
 
 	public void checkTermFrequencyBounds(){
@@ -109,5 +149,21 @@ public class Searcher {
 	public void deriveDocumentVectorLengths(){
 		this.index.deriveDocumentVectorLengths();
 	}
+	
 
+}
+class ValueComparator implements Comparator<Document> {
+
+    Map<Document, Double> base;
+    public ValueComparator(Map<Document, Double> base) {
+        this.base = base;
+    }
+   
+    public int compare(Document a, Document b) {
+        if (base.get(a) >= base.get(b)) {
+            return 1;
+        } else {
+            return -1;
+        } 
+    }
 }

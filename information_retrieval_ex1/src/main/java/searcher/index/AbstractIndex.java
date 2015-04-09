@@ -132,13 +132,24 @@ public abstract class AbstractIndex {
 		{
 			for(Map.Entry<String,TermProperties> termEntry: doc.getDocumentIndex().entrySet())
 			{
-				int df = index.get(termEntry.getKey());
-				double idf = Math.log10(docCount/df);
-				double tf = 1 + Math.log10(termEntry.getValue().getTermFrequency());
-				double weight = idf * tf;
-				termEntry.getValue().setWeighting(weight);
+				
+				termEntry.getValue().setWeighting(deriveWeight(docCount,index.get(termEntry.getKey()),termEntry.getValue().getTermFrequency()));
 			}
 		}
+	}
+	public void weightQueryTerms(Document queryDoc)
+	{
+		for(Map.Entry<String,TermProperties> termEntry: queryDoc.getDocumentIndex().entrySet())
+		{
+			
+			termEntry.getValue().setWeighting(deriveWeight(index.size(),index.get(termEntry.getKey()),termEntry.getValue().getTermFrequency()));
+		}
+	}
+	public double deriveWeight(double docCount,int df,int tf)
+	{
+		double idf = Math.log10(docCount/df);
+		double wtf = 1 + Math.log10(tf);
+		return idf * tf;
 	}
 
 	public void deriveDocumentVectorLengths()

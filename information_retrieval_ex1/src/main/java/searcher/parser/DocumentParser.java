@@ -20,6 +20,7 @@ public class DocumentParser implements Runnable{
 	private File file,stopWordList;
 	private List<String> stopWords;
 	private String stemmer="porter";
+	private Boolean query=false;
 
 	public DocumentParser(AbstractIndex index, String stemmer,File stopWordList, File file) {
 		this.index=index;
@@ -32,6 +33,19 @@ public class DocumentParser implements Runnable{
 		{
 			this.stemmer=stemmer;
 		}
+	}
+	public DocumentParser(AbstractIndex index, String stemmer,File stopWordList, File file,boolean query) {
+		this.index=index;
+		this.stopWordList=stopWordList;
+		this.file=file;
+
+		stopWords = new ArrayList<String>();
+
+		if(stemmer!=null)
+		{
+			this.stemmer=stemmer;
+		}
+		this.query=query;
 	}
 
 
@@ -53,11 +67,17 @@ public class DocumentParser implements Runnable{
 		}
 
 		document = new Document();
-		document.setDocumentId(file.getParentFile().getName()+"/"+file.getName());
+		
 
-		if(index != null){
-			index.addDocument(document,normalizeToken(parseDocument(file)));
+		if(query!=false){
+			document.setDocumentId(file.getParentFile().getName()+"/"+file.getName());	
 		}
+		else
+		{
+			document.setDocumentId(file.getName());
+		}
+		index.addDocument(document,normalizeToken(parseDocument(file)));
+
 	}
 
 
