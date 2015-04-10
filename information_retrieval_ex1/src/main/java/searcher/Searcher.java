@@ -143,6 +143,9 @@ public class Searcher {
 	{
 		Map<Document,Double> resultMap=new HashMap<Document,Double>();
 		
+		//Check Query-Termfrquency Bounds
+		index.checkQueryTermFrequencyBounds(queryDoc);
+		
 		//Derive Query-Vectorlength
 		deriveQueryVectorLength(queryDoc);
 		

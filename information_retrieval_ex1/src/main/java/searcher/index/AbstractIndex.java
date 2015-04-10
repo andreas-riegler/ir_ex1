@@ -141,6 +141,23 @@ public abstract class AbstractIndex {
 			}
 		}
 	}
+	public void checkQueryTermFrequencyBounds(Document queryDoc)
+	{
+		List<String> termsExceedingBounds = new ArrayList<String>();
+		
+		//check bounds
+		for(Map.Entry<String,TermProperties> termEntry: queryDoc.getDocumentIndex().entrySet()) {
+			if(termEntry.getValue().getTermFrequency() > this.termFrequencyUpperBound || termEntry.getValue().getTermFrequency() < this.termFrequencyLowerBound){
+				termsExceedingBounds.add(termEntry.getKey());
+			}
+		}
+
+		for(String term : termsExceedingBounds){
+
+			//remove from document index
+			queryDoc.getDocumentIndex().remove(term);
+		}
+	}
 
 	//computes term weighting of all documents
 	public void weightDocTerms()
