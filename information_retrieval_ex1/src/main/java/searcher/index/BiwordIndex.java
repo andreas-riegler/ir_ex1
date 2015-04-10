@@ -1,7 +1,6 @@
 package searcher.index;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 import searcher.model.Document;
 
