@@ -12,11 +12,13 @@ public abstract class AbstractIndex {
 
 	//term and document frequency
 	protected Map<String, Integer> index;
+
+	//list of all documents in index
 	protected List<Document> documents;
 
 	protected int termFrequencyLowerBound;
 	protected int termFrequencyUpperBound;
-	
+
 
 	public AbstractIndex(int termFrequencyLowerBound, int termFrequencyUpperBound){
 		index = new HashMap<String, Integer>();
@@ -25,7 +27,6 @@ public abstract class AbstractIndex {
 		this.termFrequencyLowerBound = termFrequencyLowerBound;
 		this.termFrequencyUpperBound = termFrequencyUpperBound;
 	}
-
 
 	public int getTermFrequencyLowerBound() {
 		return termFrequencyLowerBound;
@@ -59,12 +60,18 @@ public abstract class AbstractIndex {
 		this.documents = documents;
 	}
 
+	//adds terms to index and document-index
 	public abstract void addTerms(Document document, ArrayList<String> terms);
+	
+	//adds query terms to document-index
 	public abstract void addQueryTerms(Document document, ArrayList<String> terms);
 
 	public void addDocument(Document document, ArrayList<String> terms){
+
+		//add the terms to index and document-index
 		addTerms(document, terms);
 
+		//add the document to document list
 		synchronized (documents) {
 			if(!documents.contains(document)){
 				documents.add(document);
@@ -72,6 +79,7 @@ public abstract class AbstractIndex {
 		}
 	}
 
+	//puts a term into index
 	public void putIndexTerm(String term){
 
 		synchronized (index) {
@@ -82,10 +90,10 @@ public abstract class AbstractIndex {
 			else{
 				index.put(term, 1);
 			}
-
 		}
 	}
 
+	//puts a term into a document-index
 	public void putDocumentIndexTerm(Document document, String term) {
 
 		Map<String, TermProperties> documentIndex = document.getDocumentIndex();
@@ -107,6 +115,7 @@ public abstract class AbstractIndex {
 
 				List<String> termsExceedingBounds = new ArrayList<String>();
 
+				//check bounds
 				for(Map.Entry<String,TermProperties> termEntry: doc.getDocumentIndex().entrySet()) {
 					if(termEntry.getValue().getTermFrequency() > this.termFrequencyUpperBound || termEntry.getValue().getTermFrequency() < this.termFrequencyLowerBound){
 						termsExceedingBounds.add(termEntry.getKey());
@@ -115,29 +124,31 @@ public abstract class AbstractIndex {
 
 				for(String term : termsExceedingBounds){
 
-					//removing from document index
+					//remove from document index
 					doc.getDocumentIndex().remove(term);
 
-					//decreasing documentFrequency
+					//decrease documentFrequency
 					index.put(term, index.get(term) - 1);
 				}
 			}
 		}
-
 	}
 
+	//computes term weighting of all documents
 	public void weightDocTerms()
 	{
 		double docCount = index.size();
+
 		for(Document doc : documents)
 		{
 			for(Map.Entry<String,TermProperties> termEntry: doc.getDocumentIndex().entrySet())
 			{
-
 				termEntry.getValue().setWeighting(deriveWeight(docCount,index.get(termEntry.getKey()),termEntry.getValue().getTermFrequency()));
 			}
 		}
 	}
+
+	//computes term weighting of all query terms
 	public void weightQueryTerms(Document queryDoc)
 	{
 		for(Map.Entry<String,TermProperties> termEntry: queryDoc.getDocumentIndex().entrySet())
@@ -155,6 +166,8 @@ public abstract class AbstractIndex {
 			termEntry.getValue().setWeighting(deriveWeight(index.size(),df,termEntry.getValue().getTermFrequency()));
 		}
 	}
+
+	//computes weighting
 	public double deriveWeight(double docCount,double df,double tf)
 	{
 		double idf = Math.log10(docCount/df);
@@ -162,6 +175,7 @@ public abstract class AbstractIndex {
 		return idf * wtf;
 	}
 
+	//computes vector lengths of all documents
 	public void deriveDocumentVectorLengths()
 	{
 		for(Document doc : documents)
@@ -174,5 +188,4 @@ public abstract class AbstractIndex {
 			doc.setVectorLength(Math.sqrt(vectorLength));
 		}
 	}
-
 }

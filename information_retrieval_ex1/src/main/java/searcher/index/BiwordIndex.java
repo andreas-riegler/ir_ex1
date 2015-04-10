@@ -23,9 +23,8 @@ public class BiwordIndex extends AbstractIndex{
 			if(!document.getDocumentIndex().containsKey(biword)){
 				putIndexTerm(biword);
 			}
-			
-			putDocumentIndexTerm(document, biword);
-			
+
+			putDocumentIndexTerm(document, biword);		
 		}
 	}
 
@@ -36,10 +35,8 @@ public class BiwordIndex extends AbstractIndex{
 		for(int i = 0; i < terms.size() - 1; i++){
 
 			String biword = termsArray[i] + " " + termsArray[i + 1];
-			
-			putDocumentIndexTerm(document, biword);
-			
-		}
-		
+
+			putDocumentIndexTerm(document, biword);		
+		}	
 	}
 }
