@@ -16,8 +16,7 @@ public abstract class AbstractIndex {
 
 	protected int termFrequencyLowerBound;
 	protected int termFrequencyUpperBound;
-
-	int i = 0;
+	
 
 	public AbstractIndex(int termFrequencyLowerBound, int termFrequencyUpperBound){
 		index = new HashMap<String, Integer>();
@@ -69,7 +68,6 @@ public abstract class AbstractIndex {
 		synchronized (documents) {
 			if(!documents.contains(document)){
 				documents.add(document);
-				System.out.println("doc added " + ++i);
 			}
 		}
 	}
@@ -108,8 +106,6 @@ public abstract class AbstractIndex {
 			for(Document doc : documents){
 
 				List<String> termsExceedingBounds = new ArrayList<String>();
-
-				//System.out.println(doc == null); ==> doc manchmal null
 
 				for(Map.Entry<String,TermProperties> termEntry: doc.getDocumentIndex().entrySet()) {
 					if(termEntry.getValue().getTermFrequency() > this.termFrequencyUpperBound || termEntry.getValue().getTermFrequency() < this.termFrequencyLowerBound){

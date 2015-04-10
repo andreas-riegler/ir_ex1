@@ -1,7 +1,5 @@
 package main;
 
-import java.io.File;
-import java.sql.ResultSetMetaData;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
@@ -22,28 +20,23 @@ public class BasicSearcher {
         try {
                 parser.parseArgument(args);
                 
-                System.out.println("Parsing");
-                
+                System.out.printf("%-20s", "Parsing...");
                 searcher.parseDocuments();
+                System.out.printf("%-10s", "finished\n\r");
                 
-                System.out.println("Parsing finished");
-                System.out.println("Checking Bounds");
+                System.out.printf("%-20s", "Checking Bounds...");   
+                searcher.checkTermFrequencyBounds();            
+                System.out.printf("%-10s", "finished\n\r");
                 
-                searcher.checkTermFrequencyBounds();
-                
-                System.out.println("Checking Bounds finished");
-                System.out.println("Weighting");
-                
+                System.out.printf("%-20s", "Weighting...");   
                 searcher.weightDocTerms();
+                System.out.printf("%-10s", "finished\n\r");
                 
-                System.out.println("Weighting finished");
-                System.out.println("Deriving Vector");
-                
+                System.out.printf("%-20s", "Deriving Vector...");
                 searcher.deriveDocumentVectorLengths();
+                System.out.printf("%-10s", "finished\n\r");
                 
-                System.out.println("Deriving Vector finished");
-                
-                System.out.println("Topic to search for(Quit with q):");
+                System.out.println("Topic to search for (Quit with q):");
                 
                 String input = scanner.nextLine();
                 while(!input.equals("q"))
@@ -53,16 +46,13 @@ public class BasicSearcher {
                 	if (queryDoc != null) {
                 		TreeMap<Document, Double> resultMap = searcher.searchSimilarDocuments(queryDoc);
 
-                		System.out.println("Result list:");
+                		System.out.println("\nResult list:");
                 		int counter = 0;
                 		for (Map.Entry<Document, Double> resultEntry : resultMap.entrySet()) {
                 			counter++;
-
-                			String output = queryDoc.getDocumentId() + " Q0 "
-								+ resultEntry.getKey().getDocumentId() + " "
-								+ counter + " " + resultEntry.getValue() + " "
-								+ searcher.getRunName();
-                			System.out.println(output);
+                			
+                			System.out.println(String.format("%-8s Q0 %-30s  %3d  %1.8f %s", queryDoc.getDocumentId(), resultEntry.getKey().getDocumentId(), counter, resultEntry.getValue(), searcher.getRunName()));
+                			
                 			if (counter == 100) {
                 				break;
                 			}
@@ -70,12 +60,12 @@ public class BasicSearcher {
                 	} 
                 	else 
                 	{
-                		System.out.println("No such Topicname!");
+                		System.out.println("\nNo such Topicname!");
                 	}
-					System.out.println("Topic to search for(Quit with q):");
+					System.out.println("\nTopic to search for(Quit with q):");
         			input = scanner.nextLine();
                 }
-                System.out.println("Program terminated");
+                System.out.println("\nProgram terminated");
                 
                 scanner.close();
                 
