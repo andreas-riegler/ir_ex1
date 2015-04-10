@@ -128,7 +128,15 @@ public abstract class AbstractIndex {
 					doc.getDocumentIndex().remove(term);
 
 					//decrease documentFrequency
-					index.put(term, index.get(term) - 1);
+					
+					int docFreq = index.get(term);
+					
+					if(docFreq - 1 <= 0){
+						index.remove(term);
+					}
+					else{
+						index.put(term, docFreq - 1);
+					}
 				}
 			}
 		}
