@@ -14,7 +14,7 @@ public class BiwordIndex extends AbstractIndex{
 	@Override
 	public void addTerms(Document document, ArrayList<String> terms) {
 
-		String [] termsArray = (String []) terms.toArray();
+		String [] termsArray = (String []) terms.toArray(new String [terms.size()]);
 
 		for(int i = 0; i < terms.size() - 1; i++){
 
@@ -31,7 +31,7 @@ public class BiwordIndex extends AbstractIndex{
 
 	@Override
 	public void addQueryTerms(Document document, ArrayList<String> terms) {
-		String [] termsArray = (String []) terms.toArray();
+		String [] termsArray = (String []) terms.toArray(new String [terms.size()]);
 
 		for(int i = 0; i < terms.size() - 1; i++){
 

@@ -77,6 +77,8 @@ public class BasicSearcher {
                 }
                 System.out.println("Program terminated");
                 
+                scanner.close();
+                
         } catch (CmdLineException e) {
           
             System.err.println(e.getMessage());

@@ -66,11 +66,12 @@ public abstract class AbstractIndex {
 	public void addDocument(Document document, ArrayList<String> terms){
 		addTerms(document, terms);
 
-		if(!documents.contains(document)){
-			documents.add(document);
-			System.out.println("doc added " + ++i);
+		synchronized (documents) {
+			if(!documents.contains(document)){
+				documents.add(document);
+				System.out.println("doc added " + ++i);
+			}
 		}
-
 	}
 
 	public void putIndexTerm(String term){
@@ -102,25 +103,28 @@ public abstract class AbstractIndex {
 
 	public void checkTermFrequencyBounds(){
 
-		for(Document doc : documents){
-			
-			List<String> termsExceedingBounds = new ArrayList<String>();
-			
-			//System.out.println(doc == null); ==> doc manchmal null
-			
-			for(Map.Entry<String,TermProperties> termEntry: doc.getDocumentIndex().entrySet()) {
-				if(termEntry.getValue().getTermFrequency() > this.termFrequencyUpperBound || termEntry.getValue().getTermFrequency() < this.termFrequencyLowerBound){
-					termsExceedingBounds.add(termEntry.getKey());
+		synchronized (documents) {
+
+			for(Document doc : documents){
+
+				List<String> termsExceedingBounds = new ArrayList<String>();
+
+				//System.out.println(doc == null); ==> doc manchmal null
+
+				for(Map.Entry<String,TermProperties> termEntry: doc.getDocumentIndex().entrySet()) {
+					if(termEntry.getValue().getTermFrequency() > this.termFrequencyUpperBound || termEntry.getValue().getTermFrequency() < this.termFrequencyLowerBound){
+						termsExceedingBounds.add(termEntry.getKey());
+					}
 				}
-			}
-			
-			for(String term : termsExceedingBounds){
-				
-				//removing from document index
-				doc.getDocumentIndex().remove(term);
-				
-				//decreasing documentFrequency
-				index.put(term, index.get(term) - 1);
+
+				for(String term : termsExceedingBounds){
+
+					//removing from document index
+					doc.getDocumentIndex().remove(term);
+
+					//decreasing documentFrequency
+					index.put(term, index.get(term) - 1);
+				}
 			}
 		}
 
@@ -133,7 +137,7 @@ public abstract class AbstractIndex {
 		{
 			for(Map.Entry<String,TermProperties> termEntry: doc.getDocumentIndex().entrySet())
 			{
-				
+
 				termEntry.getValue().setWeighting(deriveWeight(docCount,index.get(termEntry.getKey()),termEntry.getValue().getTermFrequency()));
 			}
 		}
@@ -151,7 +155,7 @@ public abstract class AbstractIndex {
 			{
 				df=1;
 			}
-			
+
 			termEntry.getValue().setWeighting(deriveWeight(index.size(),df,termEntry.getValue().getTermFrequency()));
 		}
 	}
