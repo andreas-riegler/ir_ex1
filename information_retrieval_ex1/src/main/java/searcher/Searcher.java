@@ -61,14 +61,33 @@ public class Searcher {
 		return runName;
 	}
 
-
 	public void setRunName(String runName) {
 		this.runName = runName;
 	}
 
+	public int getTflowerBound() {
+		return tflowerBound;
+	}
+
+	public int getTfupperBound() {
+		return tfupperBound;
+	}
+
+	public File getStopWordList() {
+		return stopWordList;
+	}
+
+	public File getRootDir() {
+		return rootDir;
+	}
+
+	public File getTopicDirectory() {
+		return topicDirectory;
+	}
+
 
 	public void parseDocuments() {
-
+		
 		if(indexTyp.equals(IndexType.BAGOFWORDS))
 		{
 			index=new BagOfWordsIndex(tflowerBound,
