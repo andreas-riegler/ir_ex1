@@ -17,11 +17,11 @@ public class BasicSearcher {
 		Scanner scanner = new Scanner(System.in);
 
 		CmdLineParser parser = new CmdLineParser(searcher);
-		
+
 		try {
 
 			parser.parseArgument(args);
-			
+
 			if(searcher.getTflowerBound() < 0){
 				System.out.println("term frequency lower bound must not be < 0!");
 				System.exit(-1);
@@ -46,8 +46,8 @@ public class BasicSearcher {
 				System.out.println("topic directory does not exist!");
 				System.exit(-1);
 			}
-			
-			if(!searcher.getStopWordList().exists()){
+
+			if(searcher.getStopWordList() != null && !searcher.getStopWordList().exists()){
 				System.out.println("stopword list does not exist!");
 				System.exit(-1);
 			}
@@ -73,7 +73,11 @@ public class BasicSearcher {
 			String input = scanner.nextLine();
 			while(!input.equals("q"))
 			{
-				Document queryDoc=searcher.parseTopic(input);
+				Document queryDoc = null;
+				
+				if(!input.trim().isEmpty()){
+					queryDoc=searcher.parseTopic(input);
+				}
 
 				if (queryDoc != null) {
 					TreeMap<Document, Double> resultMap = searcher.searchSimilarDocuments(queryDoc);
