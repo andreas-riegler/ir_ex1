@@ -84,7 +84,7 @@ public class Searcher {
 	public File getTopicDirectory() {
 		return topicDirectory;
 	}
-
+	
 
 	public void parseDocuments() {
 		

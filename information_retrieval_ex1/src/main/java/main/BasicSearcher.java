@@ -46,6 +46,11 @@ public class BasicSearcher {
 				System.out.println("topic directory does not exist!");
 				System.exit(-1);
 			}
+			
+			if(!searcher.getStopWordList().exists()){
+				System.out.println("stopword list does not exist!");
+				System.exit(-1);
+			}
 
 			System.out.printf("%-20s", "Parsing...");
 			searcher.parseDocuments();
