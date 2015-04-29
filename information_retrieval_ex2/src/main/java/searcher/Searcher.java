@@ -223,10 +223,10 @@ public class Searcher {
 		isearcher = new IndexSearcher(ireader);
 
 		switch (rankingFunction) {
-		case BM25: isearcher.setSimilarity(new BM25Similarity());
+		case BM25: isearcher.setSimilarity(new BM25Similarity(1.2f, 0.75f));
 		break;
 
-		case BM25L: isearcher.setSimilarity(new BM25LSimilarity());
+		case BM25L: isearcher.setSimilarity(new BM25LSimilarity(1.2f, 0.75f, 0.5f));
 		break;
 		}
 
