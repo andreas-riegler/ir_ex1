@@ -1,42 +1,43 @@
 package searcher;
 
+import java.io.BufferedReader;
 import java.io.File;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 import org.kohsuke.args4j.Option;
 
-import searcher.index.AbstractIndex;
-import searcher.index.BagOfWordsIndex;
-import searcher.index.BiwordIndex;
-import searcher.model.Document;
-import searcher.model.TermProperties;
-import searcher.parser.DocumentParser;
+import searcher.index.DocumentIndex;
 
-enum IndexType{BAGOFWORDS,BIWORD}
-enum Stemmer{PORTER,LOVINS,LANCASTER}
+
 
 public class Searcher {
 
-	@Option(name="-tflb", aliases="--tflowerbound",usage="sets the term frequency lowerbound")
-	private int tflowerBound=0;
-
-	@Option(name="-tfub", aliases="--tfupperbound",usage="sets the term frequency upperbound")
-	private int tfupperBound=Integer.MAX_VALUE;
-
-	@Option(name="-swl", aliases="--stopwordlist",usage="sets the path to the stopword list")
-	private File stopWordList;
-
-	@Option(name="-stem", aliases="--stemmer",usage="sets the preferred stemmer (porter, lovins, lancaster)")
-	private Stemmer stemmer=Stemmer.PORTER;
-
-	@Option(name="-idx", aliases="--index",usage="sets the preferred index (bagofwords, biword)")
-	private IndexType indexTyp=IndexType.BAGOFWORDS;
 
 	@Option(name="-nd", aliases="--newsdir",usage="sets the path to the newsgroups root directory",required=true)
 	private File rootDir;
@@ -48,14 +49,36 @@ public class Searcher {
 	private File topicDirectory;
 
 
-	private AbstractIndex index;
 	private ExecutorService thPool;
+	private Analyzer analyzer = new StandardAnalyzer();
+	private Directory indexDirectory;
+	private DirectoryReader ireader;
+	private IndexSearcher isearcher;
 
 	public Searcher()
 	{
 		thPool=Executors.newFixedThreadPool(5);
+		Path indexPath = Paths.get("/temp/index");
+		try {
+			indexDirectory = FSDirectory.open(indexPath);
+			ireader = DirectoryReader.open(indexDirectory);
+		   
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		isearcher = new IndexSearcher(ireader);
 	}
 	
+
+	public IndexSearcher getIsearcher() {
+		return isearcher;
+	}
+
+
+	public void setIsearcher(IndexSearcher isearcher) {
+		this.isearcher = isearcher;
+	}
+
 
 	public String getRunName() {
 		return runName;
@@ -63,18 +86,6 @@ public class Searcher {
 
 	public void setRunName(String runName) {
 		this.runName = runName;
-	}
-
-	public int getTflowerBound() {
-		return tflowerBound;
-	}
-
-	public int getTfupperBound() {
-		return tfupperBound;
-	}
-
-	public File getStopWordList() {
-		return stopWordList;
 	}
 
 	public File getRootDir() {
@@ -86,19 +97,18 @@ public class Searcher {
 	}
 	
 
-	public void parseDocuments() {
+	public void createIndex() throws IOException {
 		
-		if(indexTyp.equals(IndexType.BAGOFWORDS))
-		{
-			index=new BagOfWordsIndex(tflowerBound,
-					tfupperBound);
+		
 
-		}
-		else
-		{
-			index=new BiwordIndex(tflowerBound,
-					tfupperBound);
-		}
+		// Store the index in memory:
+		// Directory directory = new RAMDirectory();
+		// To store an index on disk, use this instead:
+		
+		IndexWriterConfig config = new IndexWriterConfig(analyzer);
+		IndexWriter iwriter = new IndexWriter(indexDirectory, config);
+		
+		Set<Future<Document>> documents=new HashSet<Future<Document>>();
 
 		File[] dirs = rootDir.listFiles();
 
@@ -106,12 +116,27 @@ public class Searcher {
 			if (dir.isDirectory()) {
 				for (File file : dir.listFiles()) {
 					if (file.isFile()) {
-						thPool.execute(new DocumentParser(index, stemmer.toString(),
-								stopWordList, file));
+						Callable<Document> callable=new DocumentIndex(file);
+						Future<Document> future=thPool.submit(callable);
+						documents.add(future);
+
 					}
 				}
 			}
 		}
+		
+		for(Future<Document> doc: documents){
+			try {
+				iwriter.addDocument(doc.get());
+			} catch (InterruptedException e) {	
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		iwriter.close();
+		
 
 		thPool.shutdown();
 
@@ -124,94 +149,60 @@ public class Searcher {
 
 	}
 
-	public Document parseTopic(String topicName){
+	public Query parseTopic(String topicName){
 
 		File topicFile=new File(topicDirectory+"\\"+topicName);
 		if(topicFile.exists()){
 			
-			DocumentParser docParser = new DocumentParser(index, stemmer.toString(), stopWordList, topicFile,true);
-			docParser.run();
-			Document parsedTopic = docParser.getDocument();
-			index.weightQueryTerms(parsedTopic);
-			return parsedTopic;
+			QueryParser parser = new QueryParser("newstext", analyzer);
+			
+			FileInputStream input = null;
+			try {
+
+				input = new FileInputStream(topicFile);
+
+			} catch (FileNotFoundException e) {
+				System.out.println("File not found");
+			}
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+			
+			String querytext="";
+			try {
+
+				String line=reader.readLine();
+
+				while(line!=null)
+				{
+					querytext+=line;
+					line = reader.readLine();
+				}
+				reader.close();
+			} catch (IOException e) {
+				System.out.println(e.getMessage());
+			}
+		    Query query=null;
+			try {
+				query = parser.parse(querytext);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			return query;
 		}
 		else{
 			return null;
 		}
 	}
-	public TreeMap<Document,Double> searchSimilarDocuments(Document queryDoc)
+	public  ScoreDoc[] searchSimilarDocuments(Query query) throws IOException
 	{
-		Map<Document,Double> resultMap=new HashMap<Document,Double>();
 		
-		//Check Query-Termfrquency Bounds
-		index.checkQueryTermFrequencyBounds(queryDoc);
 		
-		//Derive Query-Vectorlength
-		deriveQueryVectorLength(queryDoc);
 		
-		for(Document doc:index.getDocuments())
-		{
-			//Derive numerator of Cosinusformula
-			double matchedTermWeights=0;
-			for(Map.Entry<String,TermProperties> termEntry: queryDoc.getDocumentIndex().entrySet())
-			{
-				TermProperties termProp=doc.getDocumentIndex().get(termEntry.getKey());
-				if(termProp!=null)
-				{
-					matchedTermWeights+=termProp.getWeighting()*termEntry.getValue().getWeighting();
-				}
-			}
-			
-			//Apply Cosinusfurmula
-			double similarity=matchedTermWeights/(queryDoc.getVectorLength()*doc.getVectorLength());
-			
-			resultMap.put(doc,similarity);
-		}
+	    ScoreDoc[] hits = isearcher.search(query, 100).scoreDocs;
 		
-		//Instantiate a Comperator and sort Documents respectively to the similarity
-		ValueComparator vc =  new ValueComparator(resultMap);
-        TreeMap<Document,Double> sortedresultMap = new TreeMap<Document,Double>(vc);
-        sortedresultMap.putAll(resultMap);
-        
-		return sortedresultMap;
+	    return hits;
 	}
-
-	public void checkTermFrequencyBounds(){
-		this.index.checkTermFrequencyBounds();
-	}
-
-	public void weightDocTerms(){
-		this.index.weightDocTerms();
-	}
-
-	public void deriveDocumentVectorLengths(){
-		this.index.deriveDocumentVectorLengths();
-	}
-	public void deriveQueryVectorLength(Document queryDoc)
-	{
-		double vectorLength = 0;
-		for(Map.Entry<String,TermProperties> termEntry: queryDoc.getDocumentIndex().entrySet())
-		{
-			vectorLength+=Math.pow(termEntry.getValue().getWeighting(),2);
-		}
-		queryDoc.setVectorLength(Math.sqrt(vectorLength));
-	}
-
 	
 
 }
-class ValueComparator implements Comparator<Document> {
 
-    Map<Document, Double> base;
-    public ValueComparator(Map<Document, Double> base) {
-        this.base = base;
-    }
-   
-    public int compare(Document a, Document b) {
-        if (base.get(a) >= base.get(b)) {
-            return -1;
-        } else {
-            return 1;
-        } 
-    }
-}
