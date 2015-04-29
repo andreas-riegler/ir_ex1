@@ -28,31 +28,36 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.kohsuke.args4j.Option;
 
 import searcher.index.DocumentIndex;
+import searcher.scoring.BM25LSimilarity;
 
-
+enum RankingFunction{DEFAULT,BM25,BM25L}
 
 public class Searcher {
 
 
 	@Option(name="-nd", aliases="--newsdir",usage="sets the path to the newsgroups root directory",required=true)
 	private File rootDir;
-	
+
 	@Option(name="-rn", aliases="--runname",usage="sets the name of the run",required=true)
 	private String runName;
-	
+
 	@Option(name="-td", aliases="--topicdir",usage="sets the path to the topic directory",required=true)
 	private File topicDirectory;
-	
+
 	@Option(name="-id", aliases="--indexdir",usage="sets the path to the index directory",required=true)
 	private File indexDir;
-	
+
 	@Option(name="-of", aliases="--outputfile",usage="sets the path to the output file",required=true)
 	private File outputFile;
+
+	@Option(name="-rf", aliases="--rankingfunction",usage="sets the preferred ranking function (default, BM25, BM25L)")
+	private RankingFunction rankingFunction = RankingFunction.DEFAULT;
 
 
 	private ExecutorService thPool;
@@ -65,10 +70,10 @@ public class Searcher {
 	{
 		thPool=Executors.newFixedThreadPool(5);
 		indexDirectory=null;
-	
+
 	}
-	
-	
+
+
 	public File getOutputFile() {
 		return outputFile;
 	}
@@ -108,21 +113,21 @@ public class Searcher {
 	public File getTopicDirectory() {
 		return topicDirectory;
 	}
-	
-	
+
+
 	public void createIndex() throws IOException {
-		
-		
+
+
 
 		// Store the index in memory:
 		// Directory directory = new RAMDirectory();
 		// To store an index on disk, use this instead:
 		Path indexPath = Paths.get(indexDir.getAbsolutePath());
 		indexDirectory = FSDirectory.open(indexPath);
-		
+
 		IndexWriterConfig config = new IndexWriterConfig(analyzer);
 		IndexWriter iwriter = new IndexWriter(indexDirectory, config);
-		
+
 		Set<Future<Document>> documents=new HashSet<Future<Document>>();
 
 		File[] dirs = rootDir.listFiles();
@@ -139,7 +144,7 @@ public class Searcher {
 				}
 			}
 		}
-		
+
 		for(Future<Document> doc: documents){
 			try {
 				iwriter.addDocument(doc.get());
@@ -149,9 +154,9 @@ public class Searcher {
 				e.printStackTrace();
 			}
 		}
-		
+
 		iwriter.close();
-		
+
 
 		thPool.shutdown();
 
@@ -168,9 +173,9 @@ public class Searcher {
 
 		File topicFile=new File(topicDirectory+"\\"+topicName);
 		if(topicFile.exists()){
-			
+
 			QueryParser parser = new QueryParser("newstext", analyzer);
-			
+
 			FileInputStream input = null;
 			try {
 
@@ -181,7 +186,7 @@ public class Searcher {
 			}
 
 			BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-			
+
 			String querytext="";
 			try {
 
@@ -196,7 +201,7 @@ public class Searcher {
 			} catch (IOException e) {
 				System.out.println(e.getMessage());
 			}
-		    Query query=null;
+			Query query=null;
 			try {
 				query = parser.parse(QueryParser.escape(querytext));
 			} catch (ParseException e) {
@@ -216,11 +221,20 @@ public class Searcher {
 		}
 		ireader = DirectoryReader.open(indexDirectory);
 		isearcher = new IndexSearcher(ireader);
-	    ScoreDoc[] hits = isearcher.search(query, 100).scoreDocs;
-		
-	    return hits;
+
+		switch (rankingFunction) {
+		case BM25: isearcher.setSimilarity(new BM25Similarity());
+		break;
+
+		case BM25L: isearcher.setSimilarity(new BM25LSimilarity());
+		break;
+		}
+
+		ScoreDoc[] hits = isearcher.search(query, 100).scoreDocs;
+
+		return hits;
 	}
-	
+
 
 }
 
