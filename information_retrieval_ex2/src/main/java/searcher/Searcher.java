@@ -50,6 +50,9 @@ public class Searcher {
 	
 	@Option(name="-id", aliases="--indexdir",usage="sets the path to the index directory",required=true)
 	private File indexDir;
+	
+	@Option(name="-of", aliases="--outputfile",usage="sets the path to the output file",required=true)
+	private File outputFile;
 
 
 	private ExecutorService thPool;
@@ -66,25 +69,29 @@ public class Searcher {
 	}
 	
 	
+	public File getOutputFile() {
+		return outputFile;
+	}
+
+	public void setOutputFile(File outputFile) {
+		this.outputFile = outputFile;
+	}
+
 	public File getIndexDir() {
 		return indexDir;
 	}
-
 
 	public void setIndexDir(File indexDir) {
 		this.indexDir = indexDir;
 	}
 
-
 	public IndexSearcher getIsearcher() {
 		return isearcher;
 	}
 
-
 	public void setIsearcher(IndexSearcher isearcher) {
 		this.isearcher = isearcher;
 	}
-
 
 	public String getRunName() {
 		return runName;
