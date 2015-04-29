@@ -1,5 +1,6 @@
 package main;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -21,7 +22,7 @@ public class BasicSearcher {
 		try {
 
 			parser.parseArgument(args);
-
+			boolean existingIndex=true;
 			
 
 			if(!searcher.getRootDir().exists()){
@@ -33,16 +34,28 @@ public class BasicSearcher {
 				System.out.println("topic directory does not exist!");
 				System.exit(-1);
 			}
-
 			
-
-			System.out.printf("%-20s", "Indexing...");
-			try {
-				searcher.createIndex();
-			} catch (IOException e1) {
-				e1.printStackTrace();
+			if(searcher.getIndexDir().exists()){
+				File[] dirs = searcher.getIndexDir().listFiles();
+				
+				if(dirs.length==0)
+				{
+					existingIndex=false;
+				}
 			}
-			System.out.printf("%-10s", "finished\n\r");
+			else{
+				existingIndex=false;
+			}
+			
+			if (!existingIndex) {
+				System.out.printf("%-20s", "Indexing...");
+				try {
+					searcher.createIndex();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				System.out.printf("%-10s", "finished\n\r");
+			}
 
 			
 

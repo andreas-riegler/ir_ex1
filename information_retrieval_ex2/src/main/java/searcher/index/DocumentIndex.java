@@ -45,7 +45,7 @@ public class DocumentIndex implements Callable<Document>{
 
 			while(line!=null)
 			{
-				newstext+=line;
+				newstext+=line+"\n";
 				line = reader.readLine();
 			}
 			reader.close();

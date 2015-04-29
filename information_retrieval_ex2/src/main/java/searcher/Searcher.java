@@ -47,6 +47,9 @@ public class Searcher {
 	
 	@Option(name="-td", aliases="--topicdir",usage="sets the path to the topic directory",required=true)
 	private File topicDirectory;
+	
+	@Option(name="-id", aliases="--indexdir",usage="sets the path to the index directory",required=true)
+	private File indexDir;
 
 
 	private ExecutorService thPool;
@@ -58,17 +61,20 @@ public class Searcher {
 	public Searcher()
 	{
 		thPool=Executors.newFixedThreadPool(5);
-		Path indexPath = Paths.get("/temp/index");
-		try {
-			indexDirectory = FSDirectory.open(indexPath);
-			ireader = DirectoryReader.open(indexDirectory);
-		   
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		isearcher = new IndexSearcher(ireader);
+		indexDirectory=null;
+	
 	}
 	
+	
+	public File getIndexDir() {
+		return indexDir;
+	}
+
+
+	public void setIndexDir(File indexDir) {
+		this.indexDir = indexDir;
+	}
+
 
 	public IndexSearcher getIsearcher() {
 		return isearcher;
@@ -96,7 +102,7 @@ public class Searcher {
 		return topicDirectory;
 	}
 	
-
+	
 	public void createIndex() throws IOException {
 		
 		
@@ -104,6 +110,8 @@ public class Searcher {
 		// Store the index in memory:
 		// Directory directory = new RAMDirectory();
 		// To store an index on disk, use this instead:
+		Path indexPath = Paths.get(indexDir.getAbsolutePath());
+		indexDirectory = FSDirectory.open(indexPath);
 		
 		IndexWriterConfig config = new IndexWriterConfig(analyzer);
 		IndexWriter iwriter = new IndexWriter(indexDirectory, config);
@@ -174,7 +182,7 @@ public class Searcher {
 
 				while(line!=null)
 				{
-					querytext+=line;
+					querytext+=line+"\n";
 					line = reader.readLine();
 				}
 				reader.close();
@@ -183,7 +191,7 @@ public class Searcher {
 			}
 		    Query query=null;
 			try {
-				query = parser.parse(querytext);
+				query = parser.parse(QueryParser.escape(querytext));
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
@@ -195,9 +203,12 @@ public class Searcher {
 	}
 	public  ScoreDoc[] searchSimilarDocuments(Query query) throws IOException
 	{
-		
-		
-		
+		if(indexDirectory==null){
+			Path indexPath = Paths.get(indexDir.getAbsolutePath());
+			indexDirectory = FSDirectory.open(indexPath);
+		}
+		ireader = DirectoryReader.open(indexDirectory);
+		isearcher = new IndexSearcher(ireader);
 	    ScoreDoc[] hits = isearcher.search(query, 100).scoreDocs;
 		
 	    return hits;
