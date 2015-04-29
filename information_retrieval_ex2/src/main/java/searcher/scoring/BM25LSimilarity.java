@@ -330,7 +330,9 @@ public class BM25LSimilarity extends Similarity {
       tfNormExpl.addDetail(new Explanation(b, "parameter b"));
       tfNormExpl.addDetail(new Explanation(stats.avgdl, "avgFieldLength"));
       tfNormExpl.addDetail(new Explanation(doclen, "fieldLength"));
-      tfNormExpl.setValue((((freq.getValue()/(1 - b + b * doclen/stats.avgdl))+d) * (k1 + 1)) / ( k1 +(freq.getValue()/(1 - b + b * doclen/stats.avgdl))+d)); 
+      tfNormExpl.setValue((((freq.getValue()/(1 - b + b * doclen/stats.avgdl))+d) * (k1 + 1)) / ( k1 +(freq.getValue()/(1 - b + b * doclen/stats.avgdl))+d));
+      if((freq.getValue()/(1 - b + b * doclen/stats.avgdl))<=0)
+    	  tfNormExpl.setValue(0);
     }
     result.addDetail(tfNormExpl);
     result.setValue(boostExpl.getValue() * stats.idf.getValue() * tfNormExpl.getValue());
