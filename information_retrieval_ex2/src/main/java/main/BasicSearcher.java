@@ -103,6 +103,10 @@ public class BasicSearcher {
 						String line = "topic" + i + " " + hitDoc.get("name") + " " + counter + " " + hit.score + " " + searcher.getRunName() + "\n";
 
 						writer.write(line, 0, line.length());
+						
+						if(i == 1 && counter <= 2){
+							System.out.println(searcher.getExplanation(hit.doc));
+						}
 					}
 				} 
 				else 

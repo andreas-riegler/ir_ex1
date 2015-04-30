@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.CharBuffer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -17,6 +18,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.RepaintManager;
+
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -25,6 +28,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -235,6 +239,41 @@ public class Searcher {
 		return hits;
 	}
 
+	public String getExplanation(int doc){
+
+		try {
+
+			QueryParser parser = new QueryParser("newstext", analyzer);
+			Query q = parser.parse("Olympus Stylus");
+
+			StringBuilder explanation = new StringBuilder();
+
+			buildExplanationRecursive(isearcher.explain(q, doc), explanation, 0);
+			
+			return explanation.toString();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public void buildExplanationRecursive(Explanation exp, StringBuilder expBuilder, int identation){
+
+		if(exp.getDetails() != null){
+			for(Explanation ex : exp.getDetails()){
+				expBuilder.append(repeat(identation, '\t') + ex.getDescription() + " " + ex.getValue() + "\n");
+				buildExplanationRecursive(ex, expBuilder, identation + 1);
+			}	
+		}
+	}
+
+	public String repeat( int n, char ch ) {
+		return CharBuffer.allocate(n).toString().replace('\0', ch);
+	}
 
 }
 
