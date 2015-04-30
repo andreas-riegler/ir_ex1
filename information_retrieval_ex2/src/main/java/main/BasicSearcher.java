@@ -100,7 +100,7 @@ public class BasicSearcher {
 
 						System.out.println(String.format("%-8s Q0 %-30s  %3d  %1.8f %s", "topic"+i, hitDoc.get("name"), counter, hit.score, searcher.getRunName()));
 
-						String line = "topic" + i + " " + hitDoc.get("name") + " " + counter + " " + hit.score + " " + searcher.getRunName() + "\n";
+						String line = "topic" + i + " Q0 " + hitDoc.get("name") + " " + counter + " " + hit.score + " " + searcher.getRunName() + "\n";
 
 						writer.write(line, 0, line.length());
 						

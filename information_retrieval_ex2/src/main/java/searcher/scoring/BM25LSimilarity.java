@@ -328,6 +328,7 @@ public class BM25LSimilarity extends Similarity {
     } else {
       float doclen = decodeNormValue((byte)norms.get(doc));
       tfNormExpl.addDetail(new Explanation(b, "parameter b"));
+      tfNormExpl.addDetail(new Explanation(d, "parameter d"));
       tfNormExpl.addDetail(new Explanation(stats.avgdl, "avgFieldLength"));
       tfNormExpl.addDetail(new Explanation(doclen, "fieldLength"));
       tfNormExpl.setValue((((freq.getValue()/(1 - b + b * doclen/stats.avgdl))+d) * (k1 + 1)) / ( k1 +(freq.getValue()/(1 - b + b * doclen/stats.avgdl))+d));
