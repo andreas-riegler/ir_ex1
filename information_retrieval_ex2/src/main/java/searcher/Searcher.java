@@ -34,6 +34,8 @@ import org.apache.lucene.store.FSDirectory;
 import org.kohsuke.args4j.Option;
 
 import searcher.index.DocumentIndex;
+import searcher.scoring.BM25ExtSimilarity;
+import searcher.scoring.BM25ExtSimilarity.BM25Model;
 import searcher.scoring.BM25LSimilarity;
 
 enum RankingFunction{DEFAULT,BM25,BM25L}
@@ -228,6 +230,8 @@ public class Searcher {
 
 		case BM25L: isearcher.setSimilarity(new BM25LSimilarity(1.2f, 0.75f, 0.5f));
 		break;
+		
+		//case DEFAULT: isearcher.setSimilarity(new BM25ExtSimilarity(BM25Model.L));
 		}
 
 		ScoreDoc[] hits = isearcher.search(query, 100).scoreDocs;
