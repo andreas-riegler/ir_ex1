@@ -239,22 +239,21 @@ public class Searcher {
 		return hits;
 	}
 
-	public String getExplanation(int doc){
+	public String getExplanation(Query q, int doc){
 
 		try {
-
-			QueryParser parser = new QueryParser("newstext", analyzer);
-			Query q = parser.parse("Olympus Stylus");
-
 			StringBuilder explanation = new StringBuilder();
 
-			buildExplanationRecursive(isearcher.explain(q, doc), explanation, 0);
+			Explanation exp = isearcher.explain(q, doc);
+
+			explanation.append("Query: " + q.toString() + "\n");
+			explanation.append(exp.getDescription() + " " + exp.getValue() + "\n");
+			
+			buildExplanationRecursive(exp, explanation, 0);
 			
 			return explanation.toString();
 
 		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 
