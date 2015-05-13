@@ -9,7 +9,11 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Scanner;
 
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.kohsuke.args4j.CmdLineException;
@@ -104,9 +108,6 @@ public class BasicSearcher {
 
 						writer.write(line, 0, line.length());
 						
-						if(i == 1 && counter <= 2){
-							System.out.println(searcher.getExplanation(hit.doc));
-						}
 					}
 				} 
 				else 
@@ -115,6 +116,25 @@ public class BasicSearcher {
 				}
 
 
+			}
+			
+			System.out.println("\n\nExplanations:");
+			
+			Analyzer analyzer = new StandardAnalyzer();
+			QueryParser queryParser = new QueryParser("newstext", analyzer);
+			Query q = queryParser.parse("Olympus Stylus");
+			
+			ScoreDoc[] hits=null;
+			
+			try {
+				hits = searcher.searchSimilarDocuments(q);
+				
+				for(int i = 0; i < 2; i++){
+					System.out.println(searcher.getExplanation(q, hits[i].doc));
+				}
+				
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 
 			writer.flush();
@@ -129,6 +149,8 @@ public class BasicSearcher {
 			parser.printUsage(System.err);
 
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 
