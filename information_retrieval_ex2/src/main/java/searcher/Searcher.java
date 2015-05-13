@@ -249,7 +249,8 @@ public class Searcher {
 
 			QueryParser parser = new QueryParser("newstext", analyzer);
 			Query q = parser.parse("Olympus Stylus");
-
+			
+			//q = parseTopic("topic1");
 			StringBuilder explanation = new StringBuilder();
 
 			buildExplanationRecursive(isearcher.explain(q, doc), explanation, 0);

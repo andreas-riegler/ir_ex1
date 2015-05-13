@@ -246,7 +246,10 @@ public class BM25LSimilarity extends Similarity {
 	  {
 		float normTf=freq/cache[(byte)norms.get(doc) & 0xFF];
 		if(normTf>0)
+		{
+			//System.out.println("NormalScore"+(weightValue * (normTf+d) / (normTf+d + k1)));
 			return weightValue * (normTf+d) / (normTf+d + k1);
+		}
 		else
 			return 0;
 	  }
@@ -337,6 +340,7 @@ public class BM25LSimilarity extends Similarity {
     }
     result.addDetail(tfNormExpl);
     result.setValue(boostExpl.getValue() * stats.idf.getValue() * tfNormExpl.getValue());
+    //System.out.println("ExplScore:"+result.getValue());
     return result;
   }
 
